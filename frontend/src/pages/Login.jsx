@@ -2,11 +2,13 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { MagicCard } from '../components/MagicCard';
+import FloatingLines from '../components/FloatingLines';
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ email:'', password:'' });
+  const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
 
   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
@@ -23,23 +25,141 @@ export default function Login() {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h2>Login</h2>
-        {error && <p style={styles.error}>{error}</p>}
-        <input name="email" placeholder="Email" onChange={handleChange} style={styles.input} />
-        <input name="password" type="password" placeholder="Password" onChange={handleChange} style={styles.input} />
-        <button onClick={handleSubmit} style={styles.btn}>Login</button>
-        <p>No account? <Link to="/register">Register</Link></p>
-      </div>
+    <div style={styles.page}>
+      <FloatingLines
+        enabledWaves={["middle", "bottom", "top"]}
+        lineCount={8}
+        lineDistance={8}
+        bendRadius={8}
+        bendStrength={-2}
+        interactive
+        parallax={true}
+        animationSpeed={1}
+        gradientStart="#ffffff"
+        gradientMid="#6f6f6f"
+        gradientEnd="#6a6a6a"
+      />
+      <div style={styles.content}>
+        <MagicCard gradientColor="#D9D9D955" style={styles.card}>
+          <div style={styles.header}>
+          <h2 style={styles.title}>Login</h2>
+          <p style={styles.description}>Enter your credentials to access your account</p>
+        </div>
+
+        <form onSubmit={handleSubmit} style={styles.form}>
+          {error && <p style={styles.error}>{error}</p>}
+
+          <label style={styles.label}>
+            Email
+            <input
+              name="email"
+              type="email"
+              placeholder="name@example.com"
+              value={form.email}
+              onChange={handleChange}
+              style={styles.input}
+            />
+          </label>
+
+          <label style={styles.label}>
+            Password
+            <input
+              name="password"
+              type="password"
+              placeholder="Password"
+              value={form.password}
+              onChange={handleChange}
+              style={styles.input}
+            />
+          </label>
+
+          <button type="submit" style={styles.button}>Sign In</button>
+        </form>
+
+        <div style={styles.meta}>
+          <span>Don't have an account? </span>
+          <Link to="/register" style={styles.link}>Register</Link>
+        </div>
+      </MagicCard>
     </div>
   );
 }
 
 const styles = {
-  container: { display:'flex', justifyContent:'center', alignItems:'center', minHeight:'100vh' },
-  card: { background:'white', padding:'2rem', borderRadius:'10px', width:'400px', display:'flex', flexDirection:'column', gap:'1rem', boxShadow:'0 2px 10px rgba(0,0,0,0.1)' },
-  input: { padding:'10px', border:'1px solid #ddd', borderRadius:'6px' },
-  btn: { padding:'10px', background:'#2563eb', color:'white', border:'none', borderRadius:'6px', cursor:'pointer' },
-  error: { color:'red', fontSize:'0.9rem' }
+  page: {
+    position: 'relative',
+    minHeight: '100vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '1.5rem',
+    background: '#0b1220',
+    overflow: 'hidden',
+  },
+  content: {
+    position: 'relative',
+    zIndex: 1,
+    width: '100%',
+    maxWidth: '420px',
+  },
+  card: {
+    width: '100%',
+    maxWidth: '420px',
+  },
+  header: {
+    marginBottom: '1.5rem',
+  },
+  title: {
+    margin: 0,
+    fontSize: '1.9rem',
+    color: '#111827',
+  },
+  description: {
+    marginTop: '0.5rem',
+    color: '#6b7280',
+    lineHeight: 1.6,
+  },
+  form: {
+    display: 'grid',
+    gap: '1rem',
+  },
+  label: {
+    display: 'grid',
+    gap: '0.55rem',
+    color: '#374151',
+    fontSize: '0.95rem',
+  },
+  input: {
+    width: '100%',
+    padding: '0.95rem 1rem',
+    borderRadius: '0.85rem',
+    border: '1px solid #d1d5db',
+    background: '#ffffff',
+    outline: 'none',
+  },
+  button: {
+    width: '100%',
+    padding: '0.95rem 1rem',
+    borderRadius: '0.85rem',
+    border: 'none',
+    background: '#2563eb',
+    color: '#ffffff',
+    fontWeight: 600,
+    cursor: 'pointer',
+  },
+  meta: {
+    marginTop: '1rem',
+    textAlign: 'center',
+    color: '#4b5563',
+    fontSize: '0.95rem',
+  },
+  link: {
+    color: '#2563eb',
+    textDecoration: 'none',
+    fontWeight: 600,
+  },
+  error: {
+    color: '#dc2626',
+    fontSize: '0.92rem',
+  },
 };

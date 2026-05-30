@@ -9,7 +9,7 @@ export default function Jobs() {
   const [msg, setMsg] = useState('');
 
   const fetchJobs = async () => {
-    const res = await axios.get('http://localhost:5000/api/jobs');
+    const res = await axios.get('http://localhost:8080/api/jobs');
     setJobs(res.data);
   };
 
@@ -18,7 +18,7 @@ export default function Jobs() {
   const apply = async (id) => {
     try {
       const res = await axios.post(
-        `http://localhost:5000/api/jobs/${id}/apply`,
+        `http://localhost:8080/api/jobs/${id}/apply`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -31,7 +31,7 @@ export default function Jobs() {
   };
 
   const deleteJob = async (id) => {
-    await axios.delete(`http://localhost:5000/api/jobs/${id}`, {
+    await axios.delete(`http://localhost:8080/api/jobs/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     fetchJobs();

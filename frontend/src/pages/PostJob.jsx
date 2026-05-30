@@ -13,8 +13,10 @@ export default function PostJob() {
 
   const handleSubmit = async e => {
     e.preventDefault();
+    console.log('Token:', token);
+    console.log('Form:', form);
     try {
-      await axios.post('http://localhost:5000/api/jobs', form, {
+      await axios.post('http://localhost:8080/api/jobs', form, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMsg('✅ Job posted!');
