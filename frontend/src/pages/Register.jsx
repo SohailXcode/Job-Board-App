@@ -3,20 +3,36 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { MagicCard } from '../components/MagicCard';
-import FloatingLines from '../components/FloatingLines';
 
 export default function Register() {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: '', email: '', password: '', role: 'student' });
+
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    password: '',
+    role: 'student',
+  });
+
   const [error, setError] = useState('');
 
-  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      const res = await axios.post('http://localhost:8080/api/auth/register', form);
+      const res = await axios.post(
+        'http://localhost:8080/api/auth/register',
+        form
+      );
+
       login(res.data.user, res.data.token);
       navigate('/jobs');
     } catch (err) {
@@ -26,85 +42,108 @@ export default function Register() {
 
   return (
     <div style={styles.page}>
-      <FloatingLines
-        enabledWaves={["middle", "bottom", "top"]}
-        lineCount={8}
-        lineDistance={8}
-        bendRadius={8}
-        bendStrength={-2}
-        interactive
-        parallax={true}
-        animationSpeed={1}
-        gradientStart="#ffffff"
-        gradientMid="#6f6f6f"
-        gradientEnd="#6a6a6a"
-      />
       <div style={styles.content}>
-        <MagicCard gradientColor="#D9D9D955" style={styles.card}>
+        <MagicCard
+          gradientColor="#D9D9D955"
+          style={styles.card}
+        >
           <div style={styles.header}>
-          <h2 style={styles.title}>Create Account</h2>
-          <p style={styles.description}>Create a new account to search and post jobs.</p>
-        </div>
+            <h2 style={styles.title}>Create Account</h2>
 
-        <form onSubmit={handleSubmit} style={styles.form}>
-          {error && <p style={styles.error}>{error}</p>}
+            <p style={styles.description}>
+              Create a new account to search and post jobs.
+            </p>
+          </div>
 
-          <label style={styles.label}>
-            Full Name
-            <input
-              name="name"
-              placeholder="Full Name"
-              value={form.name}
-              onChange={handleChange}
-              style={styles.input}
-            />
-          </label>
+          <form
+            onSubmit={handleSubmit}
+            style={styles.form}
+          >
+            {error && (
+              <p style={styles.error}>
+                {error}
+              </p>
+            )}
 
-          <label style={styles.label}>
-            Email
-            <input
-              name="email"
-              type="email"
-              placeholder="name@example.com"
-              value={form.email}
-              onChange={handleChange}
-              style={styles.input}
-            />
-          </label>
+            <label style={styles.label}>
+              Full Name
 
-          <label style={styles.label}>
-            Password
-            <input
-              name="password"
-              type="password"
-              placeholder="Password"
-              value={form.password}
-              onChange={handleChange}
-              style={styles.input}
-            />
-          </label>
+              <input
+                name="name"
+                placeholder="Full Name"
+                value={form.name}
+                onChange={handleChange}
+                style={styles.input}
+              />
+            </label>
 
-          <label style={styles.label}>
-            Account Type
-            <select
-              name="role"
-              value={form.role}
-              onChange={handleChange}
-              style={styles.input}
+            <label style={styles.label}>
+              Email
+
+              <input
+                name="email"
+                type="email"
+                placeholder="name@example.com"
+                value={form.email}
+                onChange={handleChange}
+                style={styles.input}
+              />
+            </label>
+
+            <label style={styles.label}>
+              Password
+
+              <input
+                name="password"
+                type="password"
+                placeholder="Password"
+                value={form.password}
+                onChange={handleChange}
+                style={styles.input}
+              />
+            </label>
+
+            <label style={styles.label}>
+              Account Type
+
+              <select
+                name="role"
+                value={form.role}
+                onChange={handleChange}
+                style={styles.input}
+              >
+                <option value="student">
+                  Student
+                </option>
+
+                <option value="employer">
+                  Employer
+                </option>
+              </select>
+            </label>
+
+            <button
+              type="submit"
+              style={styles.button}
             >
-              <option value="student">Student</option>
-              <option value="employer">Employer</option>
-            </select>
-          </label>
+              Register
+            </button>
+          </form>
 
-          <button type="submit" style={styles.button}>Register</button>
-        </form>
+          <div style={styles.meta}>
+            <span>
+              Already have an account?
+            </span>{' '}
 
-        <div style={styles.meta}>
-          <span>Already have an account? </span>
-          <Link to="/login" style={styles.link}>Login</Link>
-        </div>
-      </MagicCard>
+            <Link
+              to="/login"
+              style={styles.link}
+            >
+              Login
+            </Link>
+          </div>
+        </MagicCard>
+      </div>
     </div>
   );
 }
@@ -117,42 +156,50 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     padding: '1.5rem',
-    background: '#0b1220',
+    background: 'transparent',
     overflow: 'hidden',
   },
+
   content: {
     position: 'relative',
     zIndex: 1,
     width: '100%',
     maxWidth: '420px',
   },
+
   card: {
     width: '100%',
     maxWidth: '420px',
   },
+
   header: {
     marginBottom: '1.5rem',
   },
+
   title: {
     margin: 0,
     fontSize: '1.9rem',
     color: '#111827',
   },
+
   description: {
     marginTop: '0.5rem',
     color: '#6b7280',
     lineHeight: 1.6,
   },
+
   form: {
     display: 'grid',
     gap: '1rem',
   },
+
   label: {
     display: 'grid',
     gap: '0.55rem',
     color: '#374151',
     fontSize: '0.95rem',
   },
+
   input: {
     width: '100%',
     padding: '0.95rem 1rem',
@@ -161,6 +208,7 @@ const styles = {
     background: '#ffffff',
     outline: 'none',
   },
+
   button: {
     width: '100%',
     padding: '0.95rem 1rem',
@@ -171,17 +219,20 @@ const styles = {
     fontWeight: 600,
     cursor: 'pointer',
   },
+
   meta: {
     marginTop: '1rem',
     textAlign: 'center',
     color: '#4b5563',
     fontSize: '0.95rem',
   },
+
   link: {
     color: '#2563eb',
     textDecoration: 'none',
     fontWeight: 600,
   },
+
   error: {
     color: '#dc2626',
     fontSize: '0.92rem',

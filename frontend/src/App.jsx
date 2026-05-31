@@ -1,5 +1,6 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import FloatingLines from './components/FloatingLines';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Jobs from './pages/Jobs';
@@ -13,10 +14,31 @@ function PrivateRoute({ children, role }) {
   return children;
 }
 
+const authFloatingWaves = ['middle', 'bottom', 'top'];
+
 export default function App() {
+  const location = useLocation();
+  const hideNavbar = location.pathname === '/login' || location.pathname === '/register';
+  const showAuthBackground = hideNavbar;
+
   return (
     <>
-      <Navbar />
+      {showAuthBackground && (
+        <FloatingLines
+          enabledWaves={authFloatingWaves}
+          lineCount={8}
+          lineDistance={8}
+          bendRadius={8}
+          bendStrength={-2}
+          interactive
+          parallax={true}
+          animationSpeed={1}
+          gradientStart="#ffffff"
+          gradientMid="#6f6f6f"
+          gradientEnd="#6a6a6a"
+        />
+      )}
+      {!hideNavbar && <Navbar />}
       <Routes>
         <Route path="/" element={<Navigate to="/jobs" />} />
         <Route path="/login" element={<Login />} />

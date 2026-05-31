@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import {
   Clock,
   Mesh,
@@ -231,7 +231,7 @@ export default function FloatingLines({
   mouseDamping = 0.05,
   parallax = true,
   parallaxStrength = 0.2,
-  mixBlendMode = 'screen',
+  mixBlendMode = 'normal',
   gradientStart = '#ffffff',
   gradientMid = '#6f6f6f',
   gradientEnd = '#6a6a6a'
@@ -244,29 +244,45 @@ export default function FloatingLines({
   const targetParallaxRef = useRef(new Vector2(0, 0));
   const currentParallaxRef = useRef(new Vector2(0, 0));
 
-  const gradientStops = linesGradient && linesGradient.length > 0
-    ? linesGradient.slice(0, MAX_GRADIENT_STOPS)
-    : [gradientStart, gradientMid, gradientEnd];
+  const gradientStops = useMemo(() => {
+    if (linesGradient && linesGradient.length > 0) {
+      return linesGradient.slice(0, MAX_GRADIENT_STOPS);
+    }
+    return [gradientStart, gradientMid, gradientEnd];
+  }, [linesGradient?.join(','), gradientStart, gradientMid, gradientEnd]);
+
+  const effectiveEnabledWaves = useMemo(
+    () => enabledWaves.slice(),
+    [enabledWaves.join(',')]
+  );
+
+  const effectiveLineCount = useMemo(() => {
+    return typeof lineCount === 'number' ? lineCount : lineCount.slice();
+  }, [typeof lineCount === 'number' ? String(lineCount) : lineCount.join(',')]);
+
+  const effectiveLineDistance = useMemo(() => {
+    return typeof lineDistance === 'number' ? lineDistance : lineDistance.slice();
+  }, [typeof lineDistance === 'number' ? String(lineDistance) : lineDistance.join(',')]);
 
   const getLineCount = (waveType) => {
-    if (typeof lineCount === 'number') return lineCount;
-    const index = enabledWaves.indexOf(waveType);
-    return lineCount[index] ?? 6;
+    if (typeof effectiveLineCount === 'number') return effectiveLineCount;
+    const index = effectiveEnabledWaves.indexOf(waveType);
+    return effectiveLineCount[index] ?? 6;
   };
 
   const getLineDistance = (waveType) => {
-    if (typeof lineDistance === 'number') return lineDistance;
-    const index = enabledWaves.indexOf(waveType);
-    return lineDistance[index] ?? 5;
+    if (typeof effectiveLineDistance === 'number') return effectiveLineDistance;
+    const index = effectiveEnabledWaves.indexOf(waveType);
+    return effectiveLineDistance[index] ?? 5;
   };
 
-  const topLineCount = enabledWaves.includes('top') ? getLineCount('top') : 0;
-  const middleLineCount = enabledWaves.includes('middle') ? getLineCount('middle') : 0;
-  const bottomLineCount = enabledWaves.includes('bottom') ? getLineCount('bottom') : 0;
+  const topLineCount = effectiveEnabledWaves.includes('top') ? getLineCount('top') : 0;
+  const middleLineCount = effectiveEnabledWaves.includes('middle') ? getLineCount('middle') : 0;
+  const bottomLineCount = effectiveEnabledWaves.includes('bottom') ? getLineCount('bottom') : 0;
 
-  const topLineDistance = enabledWaves.includes('top') ? getLineDistance('top') * 0.01 : 0.01;
-  const middleLineDistance = enabledWaves.includes('middle') ? getLineDistance('middle') * 0.01 : 0.01;
-  const bottomLineDistance = enabledWaves.includes('bottom') ? getLineDistance('bottom') * 0.01 : 0.01;
+  const topLineDistance = effectiveEnabledWaves.includes('top') ? getLineDistance('top') * 0.01 : 0.01;
+  const middleLineDistance = effectiveEnabledWaves.includes('middle') ? getLineDistance('middle') * 0.01 : 0.01;
+  const bottomLineDistance = effectiveEnabledWaves.includes('bottom') ? getLineDistance('bottom') * 0.01 : 0.01;
 
   useEffect(() => {
     const container = containerRef.current;
@@ -278,8 +294,9 @@ export default function FloatingLines({
     const camera = new OrthographicCamera(-1, 1, 1, -1, 0, 1);
     camera.position.z = 1;
 
-    const renderer = new WebGLRenderer({ antialias: true, alpha: false });
+    const renderer = new WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setClearColor(0x000000, 0);
     renderer.domElement.style.width = '100%';
     renderer.domElement.style.height = '100%';
     container.appendChild(renderer.domElement);
@@ -416,12 +433,18 @@ export default function FloatingLines({
     };
   }, [
     gradientStops,
-    enabledWaves,
-    lineCount,
-    lineDistance,
-    topWavePosition,
-    middleWavePosition,
-    bottomWavePosition,
+    effectiveEnabledWaves.join(','),
+    effectiveLineCount,
+    effectiveLineDistance,
+    topWavePosition?.x,
+    topWavePosition?.y,
+    topWavePosition?.rotate,
+    middleWavePosition?.x,
+    middleWavePosition?.y,
+    middleWavePosition?.rotate,
+    bottomWavePosition?.x,
+    bottomWavePosition?.y,
+    bottomWavePosition?.rotate,
     animationSpeed,
     interactive,
     bendRadius,
@@ -435,10 +458,15 @@ export default function FloatingLines({
     <div
       ref={containerRef}
       style={{
-        position: 'absolute',
-        inset: 0,
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
         zIndex: 0,
         overflow: 'hidden',
+        pointerEvents: 'none',
+        background: 'transparent',
         mixBlendMode: mixBlendMode
       }}
     />

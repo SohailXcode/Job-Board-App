@@ -3,7 +3,6 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { MagicCard } from '../components/MagicCard';
-import FloatingLines from '../components/FloatingLines';
 
 export default function Login() {
   const { login } = useAuth();
@@ -26,19 +25,6 @@ export default function Login() {
 
   return (
     <div style={styles.page}>
-      <FloatingLines
-        enabledWaves={["middle", "bottom", "top"]}
-        lineCount={8}
-        lineDistance={8}
-        bendRadius={8}
-        bendStrength={-2}
-        interactive
-        parallax={true}
-        animationSpeed={1}
-        gradientStart="#ffffff"
-        gradientMid="#6f6f6f"
-        gradientEnd="#6a6a6a"
-      />
       <div style={styles.content}>
         <MagicCard gradientColor="#D9D9D955" style={styles.card}>
           <div style={styles.header}>
@@ -82,6 +68,7 @@ export default function Login() {
         </div>
       </MagicCard>
     </div>
+    </div>
   );
 }
 
@@ -93,7 +80,7 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     padding: '1.5rem',
-    background: '#0b1220',
+    background: 'transparent',
     overflow: 'hidden',
   },
   content: {
